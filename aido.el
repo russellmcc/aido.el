@@ -4,6 +4,8 @@
 ;; Copyright (c) 2023 James R. McClellan
 ;; Package-Requires: ((gptel "0.10"))
 
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
 (defvar-local aido--system-message
   "You are a large language model built into emacs.  Your purpose is to translate user commands into emacs lisp code to perform the action described by the user.  The code must actually work and perform the action the user requested.  There must only be a single code block.  The format of your response must be an org-mode document, with a single code block containing the emacs-lisp code, and not other code blocks.  Any emacs-lisp code blocks you create will be immediately executed.  For example, if a user says:
 
