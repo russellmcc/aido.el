@@ -38,10 +38,11 @@ To summarize your rules:
  - Include only one emacs-lisp code block containing code to perform the users request.
  - Format your response as an org-mode document
  - NEVER nest code blocks, not matter what.
+ - make sure the code block is tagged with ~emacs-lisp~
 ")
 
 (defvar-local aido--reminder
-  "I'll try to help, but no matter what, I won't produce a nested code block. I would never do that.")
+  "I'll try to help, but no matter what, I won't produce a nested code block. I would never do that. Instead I'll produce a single ~emacs-lisp~ code block.")
 
 (defun aido--make-prompt (query)
   "Makes the prompts"
