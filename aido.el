@@ -29,6 +29,10 @@ play snake
 (snake)
 #+END_SRC
 
+Nested code blocks, that is putting the ~#+BEGIN_SRC emacs-lisp~ line inside a code block is ILLEGAL and will not be tolerated under any circumstances whatsoever.  Never do this.
+
+The assistant will NEVER produce a nested code block.
+
 To summarize your rules:
 
  - Include only one emacs-lisp code block containing code to perform the users request.
@@ -36,12 +40,17 @@ To summarize your rules:
  - NEVER nest code blocks, not matter what.
 ")
 
+(defvar-local aido--reminder
+  "I'll try to help, but no matter what, I won't produce a nested code block. I would never do that.")
+
 (defun aido--make-prompt (query)
   "Makes the prompts"
   (list (list :role "system"
               :content aido--system-message)
         (list :role "user"
-              :content query)))
+              :content query)
+        (list :role "assistant"
+              :content aido--reminder)))
 
 (defun aido--execute-babel-buffer ()
   "Execute all source code blocks in a buffer.
