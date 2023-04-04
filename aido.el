@@ -55,21 +55,27 @@ To summarize your rules:
         (list :role "assistant"
               :content aido--reminder)))
 
-(defun aido--execute-babel-buffer ()
+(defun aido--execute-babel-buffer (exe-buffer)
   "Execute all source code blocks in a buffer.
 Call `org-babel-execute-src-block' interactively on every source block in
 the current buffer."
-  (interactive)
   (org-babel-eval-wipe-error-buffer)
   (org-save-outline-visibility t
     (goto-char (point-min))
     (while (re-search-forward
 		    "\\(call\\|src\\)_\\|^[ \t]*#\\+\\(BEGIN_SRC\\|CALL:\\)" nil t)
       (goto-char (match-beginning 0))
-      (let ((end (org-element-property :end (org-element-context))))
+      (let ((end (org-element-property :end (org-element-context)))
+            (info (org-babel-get-src-block-info)))
         (if end
           (progn
-            (org-babel-execute-src-block)
+            (with-current-buffer exe-buffer
+              (when (org-babel-confirm-evaluate info)
+		        (let* ((lang (nth 0 info))
+                       (body (org-babel--expand-body info))
+                       (params (nth 2 info))
+		               (cmd (intern (concat "org-babel-execute:" lang))))
+                  (funcall cmd body params))))
             (goto-char end))
           (goto-char (+ 1 (match-beginning 0))))))))
 
@@ -87,6 +93,7 @@ the current buffer."
   (let* ((prompt (aido--make-prompt query))
          (aido-buf-name "*aido*")
          (old-buf (get-buffer aido-buf-name))
+         (exe-buf (current-buffer))
          (aido-buf (progn
                      (when old-buf
                        (kill-buffer old-buf))
@@ -101,7 +108,7 @@ the current buffer."
        (lambda (response info)
          (gptel--insert-response response info)
          (with-current-buffer aido-buf
-           (call-interactively #'aido--execute-babel-buffer)))))))
+           (aido--execute-babel-buffer exe-buf)))))))
 
 (provide 'aido)
 ;;; aido.el ends here
