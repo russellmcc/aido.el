@@ -87,8 +87,11 @@ the current buffer."
 (defvar aido--history nil)
 
 ;;;###autoload
-(defun aido (query &optional display-aido-buffer)
-  (interactive (list (completing-read "Do with AI: " aido--history nil nil nil 'aido--history) current-prefix-arg))
+(defun aido (query &optional display-aido-buffer callback)
+  (interactive (list
+                (completing-read "Do with AI: " aido--history nil nil nil 'aido--history)
+                current-prefix-arg
+                nil))
   "Use AI to do something in emacs"
   (let* ((prompt (aido--make-prompt query))
          (aido-buf-name "*aido*")
@@ -108,7 +111,8 @@ the current buffer."
        (lambda (response info)
          (gptel--insert-response response info)
          (with-current-buffer aido-buf
-           (aido--execute-babel-buffer exe-buf)))))))
+           (aido--execute-babel-buffer exe-buf))
+         (when callback (funcall callback)))))))
 
 (provide 'aido)
 ;;; aido.el ends here
