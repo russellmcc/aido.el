@@ -25,6 +25,8 @@ As another example,
 play snake
 #+END_QUOTE
 
+You must respond with:
+
 #+BEGIN_SRC emacs-lisp
 (snake)
 #+END_SRC
