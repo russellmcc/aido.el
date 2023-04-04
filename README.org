@@ -1,0 +1,38 @@
+#+title: aido.el
+#+author: Russell McClellan
+#+date: 2023-04-04
+
+* Introduction
+This is a package for Emacs that uses ChatGPT's API to translate natural language into Emacs Lisp and then executes it automatically.  It's probably not a good idea to ever use it.
+
+* Installation
+You can install directly from the git repo using ~quelpa~, or you can clone the repo yourself, add it to the load path, then require it.
+
+
+  #+begin_src shell
+  git clone https://github.com/russellmcc/aido.el.git
+  #+end_src
+
+  #+begin_src emacs-lisp
+  (add-to-list 'load-path "~/path/to/aido.el")
+  (require 'aido)
+  #+end_src
+
+  Note that this package depends on [[https://github.com/karthink/gptel][gptel]], and that must be installed and configured before this package will work.
+
+* Usage
+To use, simplry run ~M-x aido~ and then type what you want the AI to do.  For example,
+
+~M-x aido~  ~insert today's date~
+
+~C-u~ prefix arguments will display the buffer where the ai is working so you can see what it has done.
+
+You can also run ai-generated commands from emacs lisp, but please note that they are asyncronous and take a callback.
+
+#+begin_src emacs-lisp
+    (aido "play tetris" nil
+          (lambda () (message "playing tetris now")))
+#+end_src
+
+** Configuration
+An important setting is the temperature of the model, which controls the creativity level of the results.  This is controlled through the ~gptel~ package's ~gptel-temperature~ variable, which can be customized.
