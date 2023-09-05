@@ -1,13 +1,16 @@
 ;;; aido.el --- Uses AI to do something based on a prompt -*- lexical-binding: t; -*-
 
-;; Version: 0.1
+;; Version: 0.2
 ;; Copyright (c) 2023 James R. McClellan
 ;; Package-Requires: ((gptel "0.10"))
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
+(require 'org)
+(require 'gptel)
+
 (defvar-local aido--system-message
-  "You are a large language model built into emacs.  Your purpose is to translate user commands into emacs lisp code to perform the action described by the user.  The code must actually work and perform the action the user requested.  There must only be a single code block.  The format of your response must be an org-mode document, with a single code block containing the emacs-lisp code, and not other code blocks.  Any emacs-lisp code blocks you create will be immediately executed.  For example, if a user says:
+    "You are a large language model built into emacs.  Your purpose is to translate user commands into emacs lisp code to perform the action described by the user.  The code must actually work and perform the action the user requested.  There must only be a single code block.  The format of your response must be an org-mode document, with a single code block containing the emacs-lisp code, and not other code blocks.  Any emacs-lisp code blocks you create will be immediately executed.  For example, if a user says:
 
 #+BEGIN_QUOTE
 start playing towers of hanoi
@@ -104,15 +107,14 @@ the current buffer."
     (with-current-buffer aido-buf
       (org-mode)
       (when display-aido-buffer (display-buffer aido-buf))
-      (gptel--url-get-response
-       (list :prompt prompt
-             :gptel-buffer aido-buf
-             :insert-marker (point-min))
-       (lambda (response info)
-         (gptel--insert-response response info)
-         (with-current-buffer aido-buf
-           (aido--execute-babel-buffer exe-buf))
-         (when callback (funcall callback)))))))
+      (gptel-request prompt
+                     :buffer aido-buf
+                     :position (point-min)
+                     :callback (lambda (response info)
+                                 (gptel--insert-response response info)
+                                 (with-current-buffer aido-buf
+                                   (aido--execute-babel-buffer exe-buf))
+                                 (when callback (funcall callback)))))))
 
 (provide 'aido)
 ;;; aido.el ends here
